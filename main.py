@@ -2,18 +2,31 @@
 
 import matplotlib.pyplot as plt
 import time
-
-# Load in CSV
 import csv
+import argparse
 
-DEBUG = True
+DEBUG = False
 
 raw = {'Users': [], 'Hands': []}
 user = {'ids': {}, 'Hands_played': {}}
 Hand = 0
 Money = {'ids': {}}
 
-with open('poker_now_log_t63TJnG_iQv1iXBhRe_eJBp2q.csv') as csv_file:
+parser = argparse.ArgumentParser()
+parser.add_argument('-f', '--filename', help="Enter Filename to parse", required=True)
+parser.add_argument('-o', '--onscreen', help="true or false, would you like the graph to be onscreen?", required=True)
+parser.add_argument('--debug')
+args = parser.parse_args()
+
+filename = args.filename
+onscreen = args.onscreen
+
+if "true" in str(args.onscreen).lower():
+    Onscreen = True
+else:
+    onscreen = False
+
+with open(filename) as csv_file:
     csv_reader = reversed(list(csv.reader(csv_file, delimiter=',')))
 
     for row in csv_reader:
@@ -108,20 +121,18 @@ with open('poker_now_log_t63TJnG_iQv1iXBhRe_eJBp2q.csv') as csv_file:
         print("The number of Hands played for user: " + str(users_in_game) + " was " + str(
             user['Hands_played'][user_in_game_id]))
 
-
         x = list(Money['ids'][user_in_game_id].keys())
         y = list(Money['ids'][user_in_game_id].values())
 
-        print("Y Axis Data")
-        print(y)
+        if DEBUG:
+            print("Y Axis Data")
+            print(y)
 
-        print("x Axis Data")
-        print(x)
-
+            print("x Axis Data")
+            print(x)
 
         # plot lines
         plt.plot(x, y, label=users_in_game)
-
 
         # for score_per_round in Money['ids'][user_in_game_id]:
         #     print(Len)
@@ -137,4 +148,5 @@ with open('poker_now_log_t63TJnG_iQv1iXBhRe_eJBp2q.csv') as csv_file:
     plt.draw()
     plt.grid()
     plt.savefig("Poker_Game-" + str(timestr) + ".png", format='png', dpi=1200)
-    plt.show()
+    if onscreen:
+        plt.show()
